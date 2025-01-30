@@ -1,9 +1,11 @@
 // const { log } = require("console");
 
+// const { rejects } = require("assert");
+
 // api
 const API = "https://randomuser.me/api/?results=9";
 
-// for leader
+// for loader
 const overlay = document.getElementById("overlay");
 
 // toggle loader
@@ -17,19 +19,19 @@ const loaderToggle = (toggle) => {
 
 // request promise
 const getData = (resource) => {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
 
     request.addEventListener("readystatechange", () => {
       if (request.readyState < 4) {
-        // loaderToggle(true);
+        loaderToggle(true);
       } else if (request.readyState == 4 && request.status == 200) {
         const data = JSON.parse(request.responseText);
-        console.log(data.results);
-        // loaderToggle(true);
+        resolve(data.results);
+        loaderToggle(false);
       } else if (request.request == 4) {
-        console.log("Error !!!r");
-        // loaderToggle(true);
+        reject("Error !!! ");
+        loaderToggle(false);
       }
     });
 
@@ -38,4 +40,15 @@ const getData = (resource) => {
   });
 };
 
-getData(API);
+// load
+const reload = () => {
+  getData(API)
+    .then((data) => {
+      updateUI(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+document.addEventListener("DOMContentLoaded", reload());
